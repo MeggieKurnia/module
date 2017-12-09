@@ -1,0 +1,19 @@
+{
+    "name": "vendor/appmodule",
+    "description": "muduleapp",
+    "authors": [
+        {
+            "name": "meggi",
+            "email": "meggielhaqqul@ymail.com"
+        }
+    ],
+    "require": {
+    	"components/bootstrap": "3.0.2"
+    },
+    "autoload": {
+	    "classmap": [
+	      "Classes/File.php",
+	      "Classes/Filetables.php"
+	    ]
+  	}
+}
