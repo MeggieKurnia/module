@@ -74,7 +74,7 @@ class File{
 			$php_txt.="\n \t \t \t 'listing'=>[";
 			$php_txt.="\n \t \t \t \t 'headers'=>[";
 			$php_txt.="\n \t \t \t \t \t 'columns'=>[";
-			$php_txt.="\n \t \t \t \t \t 'id' ";
+			$php_txt.="\n \t \t \t \t \t 'id','is_active' ";
 			$php_txt.="\n \t \t \t \t \t ] ";
 			$php_txt.="\n \t \t \t \t ] ";
 			$php_txt.="\n \t \t \t ], ";
