@@ -28,7 +28,7 @@ class File{
 
 	protected function createProject(){
 		$_SESSION['project'] = $this->project;
-		$_SESSION['module'] = $this->section;
+		$_SESSION['module'] = $this->docRoot;
 		$dir = $this->dirProject.$this->project;
 		if(!is_dir($dir)){
 			mkdir($dir);
