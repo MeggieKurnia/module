@@ -13,11 +13,11 @@
 			<form action="server.php" class="inline" method="POST">
 				<div class="form-group">
 				  <label for="usr">Project:</label>
-				  <input type="text" name="project" value="<?php isset($_SESSION['project']) ? $_SESSION['project'] : '';?>" class="form-control">
+				  <input type="text" name="project" value="<?php echo isset($_SESSION['project']) ? $_SESSION['project'] : '';?>" class="form-control">
 				</div>
 				<div class="form-group">
-				  <label for="pwd">Module:</label>
-				  <input type="text" name="module" value="<?php isset($_SESSION['module']) ? $_SESSION['module'] : '';?>" class="form-control">
+				  <label for="pwd">Dokument Root:</label>
+				  <input type="text" name="module" value="<?php echo isset($_SESSION['module']) ? $_SESSION['module'] : $_SERVER['DOCUMENT_ROOT'];?>" class="form-control">
 				</div>
 				<div class="form-group">
 				  <label for="pwd">Section:</label>
@@ -43,7 +43,7 @@
 					</div>
 					<div class="form-group">
 					  <label for="pwd">Multi Language</label>
-					  <select name="multilang[]" class="form-control">
+					  <select name="multilang[]" class="form-control lang">
 					  	<option value="true">true</option>
 					  	<option value="false">false</option>
 					  </select>
