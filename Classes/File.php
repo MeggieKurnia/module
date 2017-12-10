@@ -7,6 +7,7 @@ class File{
 	private $project = "";
 	private $section = "";
 	private $table = "";
+	private $docRoot = "";
 	private $field = array();
 	private $type = array();
 	private $multi = array();
@@ -19,6 +20,7 @@ class File{
 		$this->field = $post['field'];
 		$this->type = $post['type'];
 		$this->multi = $post['multilang'];
+		$this->docRoot = $post['module'];
 		if(isset($post['project']) && isset($post['section'])){
 			$this->createProject();
 		}
@@ -62,7 +64,22 @@ class File{
 					fwrite($file,$php_txt);
 					fclose($file);
 					chmod($this->dirProject."/".$param."/".$sec.".php", 0777);
+					$this->copyFile($param,$sec);
 				}
+			}
+		}
+	}
+
+	private function copyFile($p,$s){
+		if(file_exists($this->dirProject."/".$p."/".$s.".php")){
+			$from = $this->dirProject."/".$p."/".$s.".php";
+			$to = $this->docRoot."/database/".$p."/".$s.".php";
+			if($p != "migrations"){
+				$to = $this->docRoot."/modules/".$this->section."/".$p."/".$s.".php";
+			}
+			if(!file_exists($to)){
+				copy($from,$to);
+				chmod($to,0777);
 			}
 		}
 	}
