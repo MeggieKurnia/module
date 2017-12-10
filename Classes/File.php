@@ -28,7 +28,7 @@ class File{
 
 	protected function createProject(){
 		$_SESSION['project'] = $this->project;
-		$_SESSION['section'] = $this->section;
+		$_SESSION['module'] = $this->section;
 		$dir = $this->dirProject.$this->project;
 		if(!is_dir($dir)){
 			mkdir($dir);
@@ -59,7 +59,8 @@ class File{
 						$php_txt = $this->generateFileTable();
 					else
 						$php_txt = $this->generateFileMigration();
-					
+
+					$this->createDirModule();
 					$file = fopen($this->dirProject."/".$param."/".$sec.".php", "w") or die('Error Generate Panel File');
 					fwrite($file,$php_txt);
 					fclose($file);
@@ -70,18 +71,83 @@ class File{
 		}
 	}
 
+	private function createDirModule(){
+		$path = $this->docRoot."/modules/".$this->section."/";
+		if(!is_dir($path)){
+			mkdir($path);
+			if(chmod($path, 0777)){
+				mkdir($path."panel");
+				chmod($path."panel", 0777);
+				mkdir($path."tables");
+				chmod($path."tables", 0777);
+			}
+		}
+	}
+
 	private function copyFile($p,$s){
 		if(file_exists($this->dirProject."/".$p."/".$s.".php")){
 			$from = $this->dirProject."/".$p."/".$s.".php";
 			$to = $this->docRoot."/database/".$p."/".$s.".php";
 			if($p != "migrations"){
 				$to = $this->docRoot."/modules/".$this->section."/".$p."/".$s.".php";
+				$file_module = $this->docRoot."/modules/".$this->section.".php";
+				if(!file_exists($file_module)){
+					$this->createFileSection($file_module);
+				}
+				if($p == "tables")
+					$this->updateModuleFile($file_module);
 			}
 			if(!file_exists($to)){
 				copy($from,$to);
 				chmod($to,0777);
 			}
 		}
+	}
+
+	private function createFileSection($file){
+		$section = fopen($file,"w");
+		$php_txt = "<?php";
+		$php_txt.="\n return[";
+			$php_txt.="\n \t 'icon' => 'fa-clone',";
+			$php_txt.="\n \t 'tables' => [],";
+			$php_txt.="\n \t 'panels' => []";
+		$php_txt.="\n ];";
+		fwrite($section, $php_txt);
+		fclose($section); 
+	}
+
+	private function updateModuleFile($file){
+		$a = include $file;
+		if(isset($a['tables']) && isset($a['panels'])){
+			array_push($a['tables'],$this->table);
+			array_push($a['panels'],$this->table);
+		}
+		$html="<?php";
+		$html.="\n return[";
+		foreach($a as $k => $v){
+			if(!is_array($v)){
+				$html.="\n \t \t '".$k."' => '".$v."',";
+			}else{
+				$html.="\n \t \t '".$k."' => ";
+				$html.="[";
+				$i=1;
+				foreach($v as $f){
+					$html.="'".$f."'";
+					if($i != count($v))
+						$html.=",";
+					$i++;
+				}
+				$html.="]";
+				if($k != "panels")
+					$html.=",";
+			}
+		}
+		$html.="\n ];";
+		$html.="\n //end file";
+		$open = fopen($file,"w");
+		fwrite($open,$html);
+		fclose($open);
+		chmod($file,0777);
 	}
 
 	private function generateFilePanel(){
@@ -136,6 +202,8 @@ class File{
 						if($param == "edit")
 							$php_txt.=",'preview'=>true";
 						$php_txt.="],";
+						if($param == "edit")
+							$php_txt.="'ignored'=>true,'notnull'=>false";
 						$php_txt.="]";
 					}
 				}
@@ -162,7 +230,7 @@ class File{
 					$php_txt.="'title'";
 				}
 				$php_txt.=", 'name'=>'".$this->field[$i]."'";
-				if($this->multi[$i] == "true"){
+				if($this->multi[$i] == "true" && $this->type[$i] != "file"){
 					$php_txt.=", 'multilingual' => true";
 				}
 				$php_txt.="],";
@@ -223,9 +291,9 @@ class File{
 			$php_txt.="\n \t \t \t \t \t".$lang_code;
 			$php_txt.="\n \t \t \t \t \t".$tab_lang;
 			for($i=0; $i < $xfield; $i++){
-				if($this->multi[$i] == "true"){
+				if($this->multi[$i] == "true" && $this->type[$i] != "file"){
 					$type = "";
-					if($this->type[$i] == "text" || $this->type[$i] == "file")
+					if($this->type[$i] == "text")
 						$type = $tab."->string('".$this->field[$i]."', 100)->nullable();";
 					else if($this->type[$i] == "textarea")
 						$type = $tab."->string('".$this->field[$i]."', 2000)->nullable();";
