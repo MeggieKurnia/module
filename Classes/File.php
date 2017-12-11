@@ -15,8 +15,8 @@ class File{
 	function __construct(array $post){
 		session_start();
 		$this->project = $post['project'];
-		$this->section = strtolower($post['section']);
-		$this->table = $post['table'];
+		$this->section = strtolower(str_replace(" ","_",trim($post['section'])));
+		$this->table = str_replace(" ", "_", trim($post['table']));
 		$this->field = $post['field'];
 		$this->type = $post['type'];
 		$this->multi = $post['multilang'];
@@ -192,7 +192,7 @@ class File{
 		$php_txt = "";
 		if($cfield == $ctype){
 			for($i=0; $i < $cfield; $i++){
-				$php_txt.="\n \t \t \t \t \t \t '".$this->section.".".$this->table.".".$this->field[$i]."'";
+				$php_txt.="\n \t \t \t \t \t \t '".$this->section.".".$this->table.".".str_replace(" ","_",trim($this->field[$i]))."'";
 				if($this->type[$i] != "text"){
 					if($this->type[$i] == "textarea")
 						$php_txt.="=>['type'=>'textarea']";
@@ -209,7 +209,7 @@ class File{
 					}
 					if($this->type[$i] == "template"){
 						$sec_name = $this->sec_name[$i] != "" ? $this->sec_name[$i] : '';
-						$php_txt.="=>['type'=>'select template','title'=>'Menu','section'=>'".$sec_name."','notnull'=>true]";
+						$php_txt.="=>['type'=>'select template','title'=>'Menu','section'=>'".str_replace(" ","_",trim($sec_name))."','notnull'=>true]";
 					}
 				}
 				if($i != ($ctype - 1) )
@@ -234,7 +234,7 @@ class File{
 				}else{
 					$php_txt.="'title'";
 				}
-				$php_txt.=", 'name'=>'".$this->field[$i]."'";
+				$php_txt.=", 'name'=>'".str_replace(" ","_",trim($this->field[$i]))."'";
 				if($this->multi[$i] == "true" && $this->type[$i] != "file" && $this->type[$i] != "template"){
 					$php_txt.=", 'multilingual' => true";
 				}
@@ -264,11 +264,11 @@ class File{
 							$multi = true;
 						$type = "";
 						if($this->type[$i] == "text" || $this->type[$i] == "file")
-							$type = $tab."->string('".$this->field[$i]."', 100);";
+							$type = $tab."->string('".str_replace(" ","_",trim($this->field[$i]))."', 100);";
 						else if($this->type[$i] == "textarea")
-							$type = $tab."->string('".$this->field[$i]."', 2000);";
+							$type = $tab."->string('".str_replace(" ","_",trim($this->field[$i]))."', 2000);";
 						else
-							$type = $tab."->text('".$this->field[$i]."');";
+							$type = $tab."->text('".str_replace(" ","_",trim($this->field[$i]))."');";
 						$php_txt.="\n \t \t \t \t \t ".$type;
 					}
 				$php_txt.="\n \t \t \t \t});"; //end schema
@@ -299,11 +299,11 @@ class File{
 				if($this->multi[$i] == "true" && $this->type[$i] != "file"){
 					$type = "";
 					if($this->type[$i] == "text")
-						$type = $tab."->string('".$this->field[$i]."', 100)->nullable();";
+						$type = $tab."->string('".str_replace(" ","_",trim($this->field[$i]))."', 100)->nullable();";
 					else if($this->type[$i] == "textarea")
-						$type = $tab."->string('".$this->field[$i]."', 2000)->nullable();";
+						$type = $tab."->string('".str_replace(" ","_",trim($this->field[$i]))."', 2000)->nullable();";
 					else
-						$type = $tab."->text('".$this->field[$i]."')->nullable();";
+						$type = $tab."->text('".str_replace(" ","_",trim($this->field[$i]))."')->nullable();";
 					$php_txt.="\n \t \t \t \t \t ".$type;
 				}
 			}
