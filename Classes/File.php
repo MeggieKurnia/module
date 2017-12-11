@@ -21,6 +21,7 @@ class File{
 		$this->type = $post['type'];
 		$this->multi = $post['multilang'];
 		$this->docRoot = $post['module'];
+		$this->sec_name = $post['tem_name'];
 		if(isset($post['project']) && isset($post['section'])){
 			$this->createProject();
 		}
@@ -49,7 +50,7 @@ class File{
 			mkdir($this->dirProject."/".$param);
 			if(chmod($this->dirProject."/".$param,0777)){
 				if($param == 'migrations')
-					$sec = date('Y')."_".date('m')."_".date('d')."_".date(His)."_create_".$this->table."_class";
+					$sec = date('Y')."_".date('m')."_".date('d')."_".date('His')."_create_".$this->table."_class";
 				else
 					$sec = $this->table;
 				if(!file_exists($this->dirProject."/".$param."/".$sec.".php")){
@@ -206,6 +207,10 @@ class File{
 							$php_txt.="'ignored'=>true,'notnull'=>false";
 						$php_txt.="]";
 					}
+					if($this->type[$i] == "template"){
+						$sec_name = $this->sec_name[$i] != "" ? $this->sec_name[$i] : '';
+						$php_txt.="=>['type'=>'select template','title'=>'Menu','section'=>'".$sec_name."','notnull'=>true]";
+					}
 				}
 				if($i != ($ctype - 1) )
 						$php_txt.=",";
@@ -230,7 +235,7 @@ class File{
 					$php_txt.="'title'";
 				}
 				$php_txt.=", 'name'=>'".$this->field[$i]."'";
-				if($this->multi[$i] == "true" && $this->type[$i] != "file"){
+				if($this->multi[$i] == "true" && $this->type[$i] != "file" && $this->type[$i] != "template"){
 					$php_txt.=", 'multilingual' => true";
 				}
 				$php_txt.="],";
