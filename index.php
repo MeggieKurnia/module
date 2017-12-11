@@ -27,18 +27,19 @@
 				  <label for="pwd">Table</label>
 				  <input type="text" name="table" class="form-control">
 				</div>
-				<div class="form-inline">
+				<div class="form-inline" id="x">
 					<div class="form-group">
 					  <label for="pwd">Filed</label>
 					  <input type="text" name="field[]" class="form-control">
 					</div>
 					<div class="form-group">
 					  <label for="pwd">Type</label>
-					  <select name="type[]" class="form-control">
+					  <select name="type[]" class="form-control" onchange="ch(this,'0')">
 					  	<option value="text">text</option>
 					  	<option value="textarea">textarea</option>
 					  	<option value="ckeditor">ckeditor</option>
 					  	<option value="file">file</option>
+					  	<option value="template">Template</option>
 					  </select>
 					</div>
 					<div class="form-group">
@@ -65,13 +66,21 @@
 		</div>
 		<script>
 			$(document).ready(function(){
+				var x = 1;
 				$("#add").click(function(){
 					var frm_inline = $(".form-inline").eq(0).clone();
+					$(frm_inline).attr("id",x);
 					$("#apn").append(frm_inline);
 					var clone = $("#apn .form-inline").last();
 					$(clone).find('[name="field[]"]').val('');
 					$(clone).find('[name="field[]"]').focus();
 					$("#rem").show();
+					var l = $("#apn .form-inline .form-group").last();
+					if(typeof $(l).attr('id') !== 'undefined'){
+						$(l).remove();
+					}
+					$(frm_inline).find('.form-group').eq(1).find('select').attr("onchange","ch(this,'"+x+"')");
+					x++;
 				});
 
 				$("#rem").click(function(){
@@ -87,6 +96,24 @@
 					}
 				});
 			});
+
+			function ch(t,i){
+				var id = "";
+				if(i == "0"){
+					id = "x";
+				}else{
+					id = i;
+				}
+				if($(t).val() == "template"){
+					var htm = "<div class='form-group' id='s_"+i+"'>";
+					htm+="<label>Section</label>";
+					htm+="<input type='text' name='tem_name[]' class='form-control'>";
+					htm+="</div>";
+					$("#"+id).append(htm);
+				}else{
+					$("#s_"+i).remove();
+				}
+			}
 		</script>
 	</body>
 </html>
